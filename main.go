@@ -30,6 +30,8 @@ func main() {
 	mux.HandleFunc("GET /admin/metrics", apiCfg.metricsHandler)
 	mux.HandleFunc("POST /admin/reset", apiCfg.resetHandler)
 
+	mux.HandleFunc("POST /api/validate_chirp", handlerChirpsValidate)
+
 	server := &http.Server{
 		Handler: mux,
 		Addr:    ":8080",
