@@ -34,3 +34,11 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.WriteHeader(code)
 	w.Write(dat)
 }
+
+func decodeJSONBody(w http.ResponseWriter, req *http.Request, payload interface{}) {
+	decoder := json.NewDecoder(req.Body)
+	err := decoder.Decode(payload)
+	if err != nil {
+		respondWithError(w, 500, "Failed to decode parameters", err)
+	}
+}

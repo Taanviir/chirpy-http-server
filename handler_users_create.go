@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"time"
 
@@ -22,12 +21,7 @@ func (cfg *apiConfig) handlerUsersCreate(w http.ResponseWriter, req *http.Reques
 	}
 
 	userInfo := requestValues{}
-	decoder := json.NewDecoder(req.Body)
-	err := decoder.Decode(&userInfo)
-	if err != nil {
-		respondWithError(w, 500, "Failed to decode parameters", err)
-		return
-	}
+	decodeJSONBody(w, req, &userInfo)
 
 	user, err := cfg.db.CreateUsers(context.Background(), userInfo.Email)
 	if err != nil {
