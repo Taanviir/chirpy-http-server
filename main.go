@@ -16,11 +16,7 @@ import (
 type apiConfig struct {
 	fileServerHits atomic.Int32
 	db             *database.Queries
-}
-
-func (cfg *apiConfig) resetHandler(w http.ResponseWriter, req *http.Request) {
-	cfg.fileServerHits.Store(0)
-	w.WriteHeader(200)
+	platform       string
 }
 
 func main() {
@@ -36,6 +32,7 @@ func main() {
 	apiCfg := apiConfig{
 		fileServerHits: atomic.Int32{},
 		db:             dbQueries,
+		platform:       os.Getenv("PLATFORM"),
 	}
 
 	mux := http.NewServeMux()
@@ -51,6 +48,7 @@ func main() {
 	mux.HandleFunc("POST /admin/reset", apiCfg.resetHandler)
 
 	mux.HandleFunc("POST /api/validate_chirp", handlerChirpsValidate)
+	mux.HandleFunc("POST /api/users", apiCfg.handlerUsersCreate)
 
 	server := &http.Server{
 		Handler: mux,
