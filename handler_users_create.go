@@ -16,6 +16,7 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	Email     string    `json:"email"`
 	Password  string    `json:"-"`
+	JWT       string    `json:"token"`
 }
 
 func (cfg *apiConfig) handlerUsersCreate(w http.ResponseWriter, req *http.Request) {
@@ -34,7 +35,7 @@ func (cfg *apiConfig) handlerUsersCreate(w http.ResponseWriter, req *http.Reques
 	}
 
 	user, err := cfg.db.CreateUsers(context.Background(), database.CreateUsersParams{
-		Email: userInfo.Email,
+		Email:          userInfo.Email,
 		HashedPassword: hashedPassword,
 	})
 	if err != nil {

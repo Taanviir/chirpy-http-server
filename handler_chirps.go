@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Taanviir/chirpy/internal/auth"
 	"github.com/Taanviir/chirpy/internal/database"
 	"github.com/google/uuid"
 )
@@ -64,11 +65,21 @@ func (cfg *apiConfig) handlerGetChirps(w http.ResponseWriter, req *http.Request)
 
 func (cfg *apiConfig) handlerPostChirps(w http.ResponseWriter, req *http.Request) {
 	type parameters struct {
-		Body   string    `json:"body"`
-		UserID uuid.UUID `json:"user_id"`
+		Body string `json:"body"`
 	}
 	params := parameters{}
 	decodeJSONBody(w, req, &params)
+
+	token, err := auth.GetBearerToken(req.Header)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "unauthorized access", err)
+		return
+	}
+	userID, err := auth.ValidateJWT(token, cfg.tokenSecret)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "unauthorized access", err)
+		return
+	}
 
 	cleaned, err := validateChirp(params.Body)
 	if err != nil {
@@ -78,7 +89,7 @@ func (cfg *apiConfig) handlerPostChirps(w http.ResponseWriter, req *http.Request
 
 	chirp, err := cfg.db.CreateChirp(context.Background(), database.CreateChirpParams{
 		Body:   cleaned,
-		UserID: params.UserID,
+		UserID: userID,
 	})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Failed to create a new chirp record", err)

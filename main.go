@@ -17,10 +17,12 @@ type apiConfig struct {
 	fileServerHits atomic.Int32
 	db             *database.Queries
 	platform       string
+	tokenSecret    string
 }
 
 func main() {
 	godotenv.Load()
+
 	dbURL := os.Getenv("DB_URL")
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
@@ -33,6 +35,7 @@ func main() {
 		fileServerHits: atomic.Int32{},
 		db:             dbQueries,
 		platform:       os.Getenv("PLATFORM"),
+		tokenSecret: os.Getenv("JWT_SECRET"),
 	}
 
 	mux := http.NewServeMux()
@@ -59,7 +62,7 @@ func main() {
 		Addr:    ":8080",
 	}
 
-	fmt.Printf("server is listening on %s", server.Addr)
+	fmt.Printf("server is listening on %s\n", server.Addr)
 	err = server.ListenAndServe()
 	if err != nil {
 		fmt.Printf("error starting server: %s\n", err)
