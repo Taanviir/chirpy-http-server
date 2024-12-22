@@ -11,7 +11,7 @@ import (
 func (cfg *apiConfig) handlerUsersUpdate(w http.ResponseWriter, req *http.Request) {
 	type parameters struct {
 		Password string `json:"password"`
-		Email string `json:"email"`
+		Email    string `json:"email"`
 	}
 
 	type response struct {
@@ -40,8 +40,8 @@ func (cfg *apiConfig) handlerUsersUpdate(w http.ResponseWriter, req *http.Reques
 	}
 
 	updatedUser, err := cfg.db.UpdateUser(context.Background(), database.UpdateUserParams{
-		ID: userID,
-		Email: body.Email,
+		ID:             userID,
+		Email:          body.Email,
 		HashedPassword: hashedPassword,
 	})
 	if err != nil {
@@ -51,10 +51,11 @@ func (cfg *apiConfig) handlerUsersUpdate(w http.ResponseWriter, req *http.Reques
 
 	respondWithJSON(w, http.StatusOK, response{
 		User: User{
-			ID: updatedUser.ID,
+			ID:        updatedUser.ID,
 			CreatedAt: updatedUser.CreatedAt,
 			UpdatedAt: updatedUser.UpdatedAt,
-			Email: updatedUser.Email,
+			Email:     updatedUser.Email,
+			IsChirpyRed: updatedUser.IsChirpyRed,
 		},
 	})
 }
