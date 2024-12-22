@@ -30,14 +30,29 @@ func (cfg *apiConfig) handlerGetChirpsByID(w http.ResponseWriter, req *http.Requ
 }
 
 func (cfg *apiConfig) handlerGetChirps(w http.ResponseWriter, req *http.Request) {
-	chirps, err := cfg.db.GetChirps(context.Background())
+	dbChirps, err := cfg.db.GetChirps(context.Background())
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Failed to get chirps", err)
 		return
 	}
 
+	authorID := uuid.Nil
+	authorIDString := req.URL.Query().Get("author_id")
+	if authorIDString != "" {
+		authorID, err = uuid.Parse(authorIDString)
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, "Invalid author id", err)
+			return
+		}
+	}
+
+
 	allChirps := []Chirp{}
-	for _, chirp := range chirps {
+	for _, chirp := range dbChirps {
+		if authorID != uuid.Nil && chirp.UserID != authorID {
+			continue
+		}
+
 		allChirps = append(allChirps, Chirp{
 			ID:        chirp.ID,
 			CreatedAt: chirp.CreatedAt,
