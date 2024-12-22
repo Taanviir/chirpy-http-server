@@ -1,6 +1,5 @@
 # chirpy-http-server 🐤
 
-## Overview
 Chirpy is a simple http server built using Go. The aim of Chirpy is to let users register, login, and post chirps🐤!
 
 ## Features
