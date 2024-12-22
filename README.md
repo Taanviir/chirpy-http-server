@@ -23,8 +23,8 @@ Chirpy offers the following features through API endpoints:
 
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/Taanviir/blog-aggregator.git
-    cd blog-aggregator
+    git clone https://github.com/Taanviir/chirpy-http-server.git
+    cd chirpy-http-server
     ```
 
 2. **Install Dependencies**:
